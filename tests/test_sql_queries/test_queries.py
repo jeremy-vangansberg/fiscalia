@@ -1,33 +1,40 @@
 import pytest
-from src.database.queries import QueryBuilder, QUERIES
-from src.database.models import DataModel
+from datetime import datetime
+from src.database.models import FlatFileData
 
-def test_query_builder():
-    """Test la construction de requêtes SQL dynamiques"""
-    conditions = {
-        "source": "test_source",
-        "content": "test_content"
+@pytest.fixture
+def sample_flat_file():
+    """Fixture pour créer un exemple de fichier plat"""
+    return {
+        "filename": "bofip_stock_20240201.tgz",
+        "content": "contenu du fichier...",
+        "source_type": "bofip_api",
+        "status": "raw"
     }
-    
-    query = QueryBuilder.build_select_query("collected_data", conditions)
-    
-    assert "SELECT * FROM collected_data" in query
-    assert "source = %s" in query
-    assert "content = %s" in query
-    assert "AND" in query
 
-def test_predefined_queries(db_session):
-    """Test les requêtes SQL prédéfinies"""
-    # Prépare les données de test
-    test_data = DataModel(
-        source="test_source",
-        content="test_content"
+def test_create_flat_file_data(sample_flat_file):
+    """Test la création d'un modèle FlatFileData"""
+    data = FlatFileData(
+        filename=sample_flat_file["filename"],
+        content=sample_flat_file["content"],
+        source_type=sample_flat_file["source_type"]
     )
-    db_session.add(test_data)
-    db_session.commit()
     
-    # Test la requête recent_data
-    result = db_session.execute(QUERIES["select_recent_data"])
-    data = result.fetchall()
-    assert len(data) > 0
-    assert data[0].source == "test_source" 
+    assert data.filename == sample_flat_file["filename"]
+    assert data.content == sample_flat_file["content"]
+    assert data.source_type == sample_flat_file["source_type"]
+    assert data.status == "raw"  # valeur par défaut
+    assert isinstance(data.processed_at, datetime)
+
+def test_flat_file_data_defaults():
+    """Test les valeurs par défaut du modèle FlatFileData"""
+    data = FlatFileData(
+        filename="test.tgz",
+        content="test content"
+    )
+    
+    assert data.filename == "test.tgz"
+    assert data.content == "test content"
+    assert data.source_type is None  # optionnel
+    assert data.status == "raw"  # valeur par défaut
+    assert isinstance(data.processed_at, datetime) 

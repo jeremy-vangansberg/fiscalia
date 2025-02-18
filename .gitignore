@@ -258,9 +258,31 @@ wheels/
 
 # Data
 data/raw/*
+data/extracted/*
 data/processed/*
 !data/raw/.gitkeep
+!data/extracted/.gitkeep
 !data/processed/.gitkeep
+
+# Logs
+*.log
+
+# Tests
+.coverage
+htmlcov/
+.pytest_cache/
+
+# Environnement
+.env
+.venv
+env/
+venv/
+ENV/
+
+# IDE
+.vscode/
+.idea/
+*.swp
 
 # Logs
 *.log

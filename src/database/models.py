@@ -1,18 +1,25 @@
-from sqlalchemy import Column, Integer, String, DateTime, Text
-from sqlalchemy.ext.declarative import declarative_base
-from datetime import datetime
+from datetime import datetime, UTC
+from typing import Optional
+from sqlmodel import SQLModel, Field
+from pydantic import ConfigDict
 
-Base = declarative_base()
+class FlatFileData(SQLModel, table=True):
+    """Modèle pour stocker les données brutes des fichiers plats"""
+    
+    id: Optional[int] = Field(default=None, primary_key=True)
+    filename: str = Field(max_length=255)
+    content: str
+    processed_at: datetime = Field(default_factory=lambda: datetime.now(UTC))
+    source_type: Optional[str] = Field(max_length=50, default=None)
+    status: str = Field(max_length=20, default="raw")
 
-class FlatFileData(Base):
-    __tablename__ = "flat_file_data"
-
-    id = Column(Integer, primary_key=True, index=True)
-    filename = Column(String(255), nullable=False)
-    content = Column(Text, nullable=False)
-    processed_at = Column(DateTime, default=datetime.utcnow)
-    source_type = Column(String(50))
-    status = Column(String(20), default="raw")
-
-    def __repr__(self):
-        return f"<FlatFileData(filename='{self.filename}', processed_at='{self.processed_at}')>" 
+    model_config = ConfigDict(
+        json_schema_extra={
+            "example": {
+                "filename": "bofip_stock_20240129.tgz",
+                "content": "contenu du fichier...",
+                "source_type": "bofip_api",
+                "status": "raw"
+            }
+        }
+    ) 

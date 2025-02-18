@@ -8,50 +8,54 @@ Projet de collecte et d'analyse des données fiscales françaises. Ce projet fai
 flowchart TD
     A("Bofip") --> B["Extraction du flat file (via requête API)"]
     C("Source Web") --> D["Extraction du flat file (via scraping)"]
-    B --> E["Stockage des flat files"]
+    B --> E["Stockage des fichiers compressés"]
     D --> E
-    E --> F{"Choix d'environnement"}
-    F -- Local --> G["Traitement local"]
-    F -- Azure --> H["Azure Data Lake Gen2"]
-    G --> I["Agrégation et normalisation"]
-    H --> I
-    I --> J[(Stockage dans une BDD)]
-    J --> M["API CRUD (FastAPI)"]
+    E --> F["Décompression des fichiers"]
+    F --> G{"Choix d'environnement"}
+    G -- Local --> H["Traitement local"]
+    G -- Azure --> I["Azure Data Lake Gen2"]
+    H --> J["Transformation et normalisation"]
+    I --> J
+    J --> K[(Stockage dans une BDD)]
+    K --> L["API CRUD (FastAPI)"]
 ```
 
 ## Architecture
 
 ```
 fiscalia_data_collection/
-├── scripts/               # Scripts d'exécution
-│   ├── run_api.py        # Lance l'API
-│   ├── run_api_extraction.py  # Extraction via API
-│   └── run_scraping.py   # Web scraping
-├── src/                  # Code source
-│   ├── api/             # API FastAPI
-│   ├── config/          # Configuration
-│   ├── data_extraction/ # Extracteurs de données
-│   ├── data_aggregation/# Agrégation des données
-│   ├── storage/         # Gestion du stockage
-│   └── utils/           # Utilitaires
-├── docs/                # Documentation
-│   └── mermaid.MD      # Diagrammes du projet
-├── notebooks/           # Notebooks d'exploration
-└── tests/              # Tests unitaires
+├── scripts/                      # Scripts d'exécution
+│   ├── run_api.py               # Lance l'API
+│   └── run_bofip_data_collection.py  # Pipeline de collecte BOFiP
+├── src/                         # Code source
+│   ├── api/                    # API FastAPI
+│   ├── config/                 # Configuration
+│   ├── data_extraction/        # Extracteurs de données
+│   ├── data_transformation/    # Transformation des données
+│   │   ├── decompressor.py    # Décompression des fichiers
+│   │   └── normalizer.py      # Normalisation des données
+│   ├── storage/               # Gestion du stockage
+│   └── utils/                 # Utilitaires
+├── docs/                      # Documentation
+│   └── mermaid.MD            # Diagrammes du projet
+├── notebooks/                 # Notebooks d'exploration
+└── tests/                    # Tests unitaires
 ```
 
-## Fonctionnalités
+## Utilisation
 
-- Extraction automatisée des données du BOFiP
-- Support du stockage local et Azure Data Lake Gen2
-- API REST pour accéder aux données
-- Pipeline de traitement des données
-
-## Installation
+Le script principal permet d'exécuter tout ou partie du pipeline de collecte :
 
 ```bash
-# Installation avec Poetry
-poetry install
+# Pipeline complet
+poetry run python scripts/run_bofip_data_collection.py
+
+# Étapes spécifiques
+poetry run python scripts/run_bofip_data_collection.py --steps extract decompress
+poetry run python scripts/run_bofip_data_collection.py --steps transform
+
+# API
+poetry run python scripts/run_api.py
 ```
 
 ## Configuration
@@ -65,16 +69,6 @@ STORAGE_TYPE=local
 # API BOFiP
 BOFIP_API_URL=https://...
 BOFIP_API_LIMIT=20
-```
-
-## Utilisation
-
-```bash
-# Extraction des données
-poetry run python scripts/run_api_extraction.py
-
-# Lancement de l'API
-poetry run python scripts/run_api.py
 ```
 
 ## Azure Data Lake Storage
