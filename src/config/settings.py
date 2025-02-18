@@ -1,38 +1,43 @@
-from pydantic import BaseSettings
-from typing import List
+from typing import Optional, Literal
+from pathlib import Path
+from pydantic_settings import BaseSettings, SettingsConfigDict
+
+# Obtenir le chemin absolu de la racine du projet
+PROJECT_ROOT = Path(__file__).parent.parent.parent
 
 class Settings(BaseSettings):
-    # Base de données
-    DATABASE_TYPE: str = "mysql"
-    DATABASE_URL: str = "mysql://user:password@localhost/dbname"
-    
-    # Scraping
-    SCRAPING_LIBRARIES: List[str] = ["requests", "scrapy"]
-    
-    # API
-    API_FRAMEWORK: str = "fastapi"
-    API_VERSION: str = "1.0.0"
-    API_TITLE: str = "Data Management API"
-    API_PREFIX: str = "/api/v1"
-    
-    # Logging
+    # Configuration du logging
     LOG_LEVEL: str = "INFO"
+
+    # Configuration de la base de données
+    DATABASE_URL: str = "sqlite:///./data.db"
     
-    class Config:
-        env_file = ".env"
-        case_sensitive = True
+    # Configuration du stockage
+    STORAGE_TYPE: Literal["local", "azure"] = "local"
+    # Pour le stockage local
+    BOFIP_BASE_PATH: Path = PROJECT_ROOT / "data" / "bofip"
+    # Pour Azure Data Lake Gen2
+    AZURE_STORAGE_ACCOUNT: Optional[str] = None
+    AZURE_STORAGE_KEY: Optional[str] = None
+    AZURE_CONTAINER: Optional[str] = None
+    AZURE_DIRECTORY: Optional[str] = "bofip"
+    
+    # Configuration BOFIP API
+    BOFIP_API_URL: str
+    BOFIP_API_LIMIT: int = 20
+    
+    # Configuration API
+    API_HOST: str = "0.0.0.0"
+    API_PORT: int = 8000
+    API_WORKERS: int = 4
+    
+    # Configuration du modèle
+    model_config = SettingsConfigDict(
+        env_file=".env",
+        env_file_encoding="utf-8",
+        case_sensitive=True,
+        extra="ignore"
+    )
 
-def create_settings():
-    """Factory function pour créer les settings"""
-    return Settings()
-
-def get_settings():
-    """Singleton pattern pour les settings"""
-    if not hasattr(get_settings, "_settings"):
-        get_settings._settings = create_settings()
-    return get_settings._settings
-
-if __name__ == "__main__":
-    settings = get_settings()
-else:
-    settings = get_settings()  # Pour les imports 
+# Instance singleton des settings
+settings = Settings() 
