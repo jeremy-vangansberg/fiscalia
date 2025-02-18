@@ -3,6 +3,22 @@
 ## Description
 Ce projet implémente un système de gestion de données répondant au référentiel de compétences E1. Il permet l'extraction, la transformation et le stockage de données depuis différentes sources vers une base de données structurée.
 
+
+```mermaid
+flowchart TD
+    A("Bofip") --> B["Extraction du flat file\n(via requête API)"]
+    C("Source Web") --> D["Extraction du flat file\n(via scraping)"]
+    B --> E["Stockage des flat files"]
+    D --> E
+    E --> F{"Choix d'environnement"}
+    F -- Local --> G["Traitement local"]
+    F -- Azure --> H["Azure Data Lake Gen2"]
+    G --> I["Agrégation et normalisation\n(ELT)"]
+    H --> I
+    I --> J[(Stockage dans une BDD)]
+    J --> M["API CRUD (FastAPI)"]
+```
+
 ## Compétences Couvertes
 
 ### 1. Extraction de Données (C1)
