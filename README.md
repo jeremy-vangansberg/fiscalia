@@ -2,6 +2,23 @@
 
 Projet de collecte et d'analyse des données fiscales françaises. Ce projet fait partie d'une certification et vise à automatiser la collecte des données du BOFiP (Bulletin Officiel des Finances Publiques).
 
+## Pipeline de données
+
+```mermaid
+flowchart TD
+    A("Bofip") --> B["Extraction du flat file (via requête API)"]
+    C("Source Web") --> D["Extraction du flat file (via scraping)"]
+    B --> E["Stockage des flat files"]
+    D --> E
+    E --> F{"Choix d'environnement"}
+    F -- Local --> G["Traitement local"]
+    F -- Azure --> H["Azure Data Lake Gen2"]
+    G --> I["Agrégation et normalisation"]
+    H --> I
+    I --> J[(Stockage dans une BDD)]
+    J --> M["API CRUD (FastAPI)"]
+```
+
 ## Architecture
 
 ```
@@ -17,6 +34,8 @@ fiscalia_data_collection/
 │   ├── data_aggregation/# Agrégation des données
 │   ├── storage/         # Gestion du stockage
 │   └── utils/           # Utilitaires
+├── docs/                # Documentation
+│   └── mermaid.MD      # Diagrammes du projet
 ├── notebooks/           # Notebooks d'exploration
 └── tests/              # Tests unitaires
 ```
