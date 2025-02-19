@@ -1,12 +1,18 @@
 flowchart TD
-    A("Bofip") --> B["Extraction du flat file\n(via requête API)"]
-    C("Source Web") --> D["Extraction du flat file\n(via scraping)"]
-    B --> E["Stockage des flat files"]
-    D --> E
-    E --> F{"Choix d'environnement"}
-    F -- Local --> G["Traitement local"]
+    A("Bofip") --> n1["pdf"] & n2["API"]
+    B["html:data<br>xml:metadata"] --> E["Stockage des flat files"]
+    E --> F@{ label: "Choix d'environnement" }
+    F -- Local --> G["local"]
     F -- Azure --> H["Azure Data Lake Gen2"]
-    G --> I["Agrégation et normalisation\n(ELT)"]
+    G --> I["Ingestion en base de données"]
     H --> I
-    I --> J[(Stockage dans une BDD)]
+    I --> J["MySQL (+JSON)"]
     J --> M["API CRUD (FastAPI)"]
+    n1 --> E
+    n2 --> B
+
+    F@{ shape: diamond}
+    G@{ shape: disk}
+    H@{ shape: disk}
+    J@{ shape: db}
+    M@{ shape: rect}

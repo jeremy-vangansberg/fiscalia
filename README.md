@@ -6,18 +6,23 @@ Projet de collecte et d'analyse des données fiscales françaises. Ce projet fai
 
 ```mermaid
 flowchart TD
-    A("Bofip") --> B["Extraction du flat file (via requête API)"]
-    C("Source Web") --> D["Extraction du flat file (via scraping)"]
-    B --> E["Stockage des fichiers compressés"]
-    D --> E
-    E --> F["Décompression des fichiers"]
-    F --> G{"Choix d'environnement"}
-    G -- Local --> H["Traitement local"]
-    G -- Azure --> I["Azure Data Lake Gen2"]
-    H --> J["Transformation et normalisation"]
-    I --> J
-    J --> K[(Stockage dans une BDD)]
-    K --> L["API CRUD (FastAPI)"]
+    A("Bofip") --> n1["pdf"] & n2["API"]
+    B["html:data<br>xml:metadata"] --> E["Stockage des flat files"]
+    E --> F@{ label: "Choix d'environnement" }
+    F -- Local --> G["local"]
+    F -- Azure --> H["Azure Data Lake Gen2"]
+    G --> I["Ingestion en base de données"]
+    H --> I
+    I --> J["MySQL (+JSON)"]
+    J --> M["API CRUD (FastAPI)"]
+    n1 --> E
+    n2 --> B
+
+    F@{ shape: diamond}
+    G@{ shape: disk}
+    H@{ shape: disk}
+    J@{ shape: db}
+    M@{ shape: rect}
 ```
 
 ## Architecture
