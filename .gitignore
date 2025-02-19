@@ -1,6 +1,9 @@
 # Created by https://www.toptal.com/developers/gitignore/api/linux,macos,django
 # Edit at https://www.toptal.com/developers/gitignore?templates=linux,macos,django
 
+
+
+*.pdf
 BOFiP/
 ### Django ###
 *.log
