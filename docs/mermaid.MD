@@ -1,3 +1,4 @@
+```mermai
 flowchart TD
     A("Bofip") --> n1["pdf"] & n2["API"]
     B["html:data<br>xml:metadata"] --> E["Stockage des flat files"]
@@ -16,3 +17,4 @@ flowchart TD
     H@{ shape: disk}
     J@{ shape: db}
     M@{ shape: rect}
+```

@@ -2,6 +2,55 @@
 
 Projet de collecte et d'analyse des données fiscales françaises. Ce projet fait partie d'une certification et vise à automatiser la collecte des données du BOFiP (Bulletin Officiel des Finances Publiques).
 
+## Prérequis
+
+### Base de données
+1. Installer MySQL sur votre système :
+   - Sur macOS : `brew install mysql`
+   - Sur Ubuntu/Debian : `sudo apt install mysql-server`
+   - Sur Windows : Télécharger et installer MySQL depuis le site officiel
+
+2. Démarrer le service MySQL :
+   - Sur macOS : `brew services start mysql`
+   - Sur Ubuntu/Debian : `sudo service mysql start`
+   - Sur Windows : Via le gestionnaire de services
+
+3. Configurer un utilisateur MySQL avec les droits nécessaires :
+```sql
+CREATE USER 'your_user'@'localhost' IDENTIFIED BY 'your_password';
+GRANT ALL PRIVILEGES ON *.* TO 'your_user'@'localhost';
+FLUSH PRIVILEGES;
+```
+
+## Installation
+
+1. Cloner le dépôt :
+```bash
+git clone <repository_url>
+cd fiscalia_data_collection
+```
+
+2. Installer les dépendances avec Poetry :
+```bash
+poetry install
+```
+
+3. Copier le fichier de configuration :
+```bash
+cp .env.example .env
+```
+
+4. Modifier le fichier `.env` avec vos paramètres :
+```env
+DB_USER=your_user
+DB_PASSWORD=your_password
+```
+
+5. Initialiser la base de données :
+```bash
+poetry run python scripts/init_database.py
+```
+
 ## Pipeline de données
 
 ```mermaid

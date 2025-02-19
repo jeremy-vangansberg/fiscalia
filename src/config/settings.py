@@ -10,7 +10,12 @@ class Settings(BaseSettings):
     LOG_LEVEL: str = "INFO"
 
     # Configuration de la base de données
-    DATABASE_URL: str = "sqlite:///./data.db"
+    DB_HOST: str = "localhost"
+    DB_PORT: int = 3306
+    DB_NAME: str = "bofip"
+    DB_USER: str = "root"
+    DB_PASSWORD: str = ""
+    DB_ECHO: bool = False  # Active les logs SQL si True
     
     # Configuration du stockage
     STORAGE_TYPE: Literal["local", "azure"] = "local"
