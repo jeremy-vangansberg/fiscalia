@@ -17,14 +17,9 @@ class Settings(BaseSettings):
     
     # Chemins des données (local)
     DATA_DIR: Path = PROJECT_ROOT / "data"
-    RAW_DATA_DIR: Path = DATA_DIR / "raw"
-    EXTRACTED_DATA_DIR: Path = DATA_DIR / "extracted"
-    PROCESSED_DATA_DIR: Path = DATA_DIR / "processed"
-    
-    # Chemins spécifiques BOFiP
-    BOFIP_RAW_DIR: Path = RAW_DATA_DIR / "bofip"
-    BOFIP_EXTRACTED_DIR: Path = EXTRACTED_DATA_DIR / "bofip"
-    BOFIP_PROCESSED_DIR: Path = PROCESSED_DATA_DIR / "bofip"
+    RAW_DIR: Path = DATA_DIR / "raw"
+    DOCUMENTATION_DIR: Path = DATA_DIR / "documentation"
+    EXTRACTED_DIR: Path = DATA_DIR / "extracted"
     
     # Pour Azure Data Lake Gen2
     AZURE_STORAGE_ACCOUNT: Optional[str] = None
@@ -35,6 +30,9 @@ class Settings(BaseSettings):
     # Configuration BOFIP API
     BOFIP_API_URL: str = "https://data.economie.gouv.fr/api/explore/v2.1/catalog/datasets/bofip-impots/records"
     BOFIP_API_LIMIT: int = 20
+    BOFIP_DOCUMENTATION_URL: str = "https://data.economie.gouv.fr/api/datasets/1.0/bofip-impots/attachments/bofip_documentation_pdf/"
+    BOFIP_DOCUMENTATION_FILENAME: str = "bofip_documentation.pdf"
+    BOFIP_DOCUMENTATION_PATH: Path = DOCUMENTATION_DIR / BOFIP_DOCUMENTATION_FILENAME   
     
     # Configuration API
     API_HOST: str = "0.0.0.0"
@@ -55,12 +53,9 @@ class Settings(BaseSettings):
         # Création automatique des répertoires de données
         for directory in [
             self.DATA_DIR,
-            self.RAW_DATA_DIR,
-            self.EXTRACTED_DATA_DIR,
-            self.PROCESSED_DATA_DIR,
-            self.BOFIP_RAW_DIR,
-            self.BOFIP_EXTRACTED_DIR,
-            self.BOFIP_PROCESSED_DIR
+            self.RAW_DIR,
+            self.DOCUMENTATION_DIR,
+            self.EXTRACTED_DIR
         ]:
             directory.mkdir(parents=True, exist_ok=True)
 

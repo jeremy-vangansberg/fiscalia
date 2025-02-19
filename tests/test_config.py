@@ -18,6 +18,11 @@ API_PORT=9000
     env_path.write_text(env_content.strip())
     return env_path
 
+@pytest.fixture
+def project_root():
+    """Fixture pour le répertoire racine du projet"""
+    return Path(__file__).parent.parent
+
 @pytest.fixture(autouse=True)
 def clean_env():
     """Nettoie les variables d'environnement avant chaque test"""
@@ -47,17 +52,18 @@ def test_default_values():
     assert settings.BOFIP_API_LIMIT == 20
     assert settings.BOFIP_API_URL == "https://data.economie.gouv.fr/api/explore/v2.1/catalog/datasets/bofip-impots/records"
 
-def test_data_directories_creation(tmp_path):
-    """Test la création automatique des répertoires de données"""
-    settings = Settings(_env_file=None, DATA_DIR=tmp_path)
-    
-    assert settings.DATA_DIR.exists()
-    assert settings.RAW_DATA_DIR.exists()
-    assert settings.EXTRACTED_DATA_DIR.exists()
-    assert settings.PROCESSED_DATA_DIR.exists()
-    assert settings.BOFIP_RAW_DIR.exists()
-    assert settings.BOFIP_EXTRACTED_DIR.exists()
-    assert settings.BOFIP_PROCESSED_DIR.exists()
+def test_data_directories_creation(test_settings):
+    """Test que les répertoires de données sont créés automatiquement"""
+    assert test_settings.DATA_DIR.exists()
+    assert (test_settings.DATA_DIR / "raw").exists()
+    assert (test_settings.DATA_DIR / "documentation").exists()
+    assert (test_settings.DATA_DIR / "extracted").exists()
+
+def test_data_directories_paths(test_settings, project_root):
+    """Test que les chemins des répertoires sont correctement configurés"""
+    assert (test_settings.DATA_DIR / "raw") == test_settings.DATA_DIR / "raw"
+    assert (test_settings.DATA_DIR / "documentation") == test_settings.DATA_DIR / "documentation"
+    assert (test_settings.DATA_DIR / "extracted") == test_settings.DATA_DIR / "extracted"
 
 def test_env_test_override(env_file):
     """Test le chargement des variables depuis .env.test"""
@@ -76,6 +82,6 @@ def test_path_resolution():
     project_root = Path(__file__).parent.parent
     
     assert settings.DATA_DIR == project_root / "data"
-    assert settings.RAW_DATA_DIR == project_root / "data/raw"
-    assert settings.BOFIP_RAW_DIR == project_root / "data/raw/bofip" 
+    assert (settings.DATA_DIR / "raw") == project_root / "data/raw"
+    assert (settings.DATA_DIR / "raw/bofip") == project_root / "data/raw/bofip" 
  

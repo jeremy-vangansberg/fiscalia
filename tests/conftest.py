@@ -1,5 +1,6 @@
 import pytest
 import os
+import tempfile
 from pathlib import Path
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
@@ -10,6 +11,7 @@ from src.config.settings import Settings
 def test_settings():
     """Fixture pour les paramètres de test"""
     env_path = Path(__file__).parent / ".env.test"
+    os.environ["PYTEST_TMPDIR"] = tempfile.mkdtemp()
     return Settings(_env_file=env_path)
 
 @pytest.fixture(scope="session")

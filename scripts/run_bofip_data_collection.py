@@ -35,7 +35,7 @@ def extract_data():
     """Étape 1: Extraction des données du BOFiP
     
     Cette étape télécharge le dernier fichier stock disponible depuis l'API BOFiP.
-    Le fichier est stocké dans le répertoire configuré (BOFIP_RAW_DIR).
+    Le fichier est stocké dans le répertoire configuré (RAW_DIR).
     
     Returns:
         str: Chemin du fichier compressé téléchargé
@@ -58,7 +58,7 @@ def decompress_data(file_path: str):
         Path: Chemin du répertoire contenant les fichiers décompressés
     """
     logger.info(f"Début de la décompression du fichier : {file_path}")
-    decompressor = Decompressor(output_dir=settings.BOFIP_EXTRACTED_DIR)
+    decompressor = Decompressor(output_dir=settings.EXTRACTED_DIR)
     extracted_dir = decompressor.decompress(file_path)
     logger.info(f"Fichiers BOFiP décompressés dans : {extracted_dir}")
     return extracted_dir
@@ -67,7 +67,7 @@ def transform_data(input_dir: Path):
     """Étape 3: Transformation des données BOFiP
     
     Nettoie et normalise les données extraites pour les préparer au stockage.
-    Les données transformées sont stockées dans BOFIP_PROCESSED_DIR.
+    Les données transformées sont stockées dans EXTRACTED_DIR.
     
     Args:
         input_dir: Chemin du répertoire contenant les fichiers à transformer
@@ -77,8 +77,16 @@ def transform_data(input_dir: Path):
     # - Nettoyage des données
     # - Normalisation des formats
     # - Validation des schémas
-    # - Stockage dans settings.BOFIP_PROCESSED_DIR
+    # - Stockage dans settings.EXTRACTED_DIR
     logger.info("Transformation des données terminée")
+
+
+def download_documentation():
+    """Télécharge la documentation BOFiP"""
+    logger.info("Début du téléchargement de la documentation BOFiP")
+    extractor = BofipExtractor()
+    extractor.download_file(settings.BOFIP_DOCUMENTATION_URL, settings.BOFIP_DOCUMENTATION_PATH)
+    logger.info("Documentation BOFiP téléchargée avec succès")
 
 def run_pipeline(steps=None):
     """Exécute le pipeline de collecte BOFiP
@@ -94,7 +102,7 @@ def run_pipeline(steps=None):
         Path ou str: Chemin du dernier résultat généré par le pipeline
     """
     try:
-        steps = steps or ['extract', 'decompress', 'transform']
+        steps = steps or ['extract', 'decompress', 'transform', 'download_documentation']
         logger.info(f"Démarrage du pipeline BOFiP avec les étapes : {steps}")
         result = None
 
@@ -102,12 +110,15 @@ def run_pipeline(steps=None):
             result = extract_data()
         
         if 'decompress' in steps and (result or 'extract' not in steps):
-            file_to_decompress = result or list(settings.BOFIP_RAW_DIR.glob('*.tgz'))[-1]
+            file_to_decompress = result or list(settings.RAW_DIR.glob('*.tgz'))[-1]
             result = decompress_data(str(file_to_decompress))
         
         if 'transform' in steps and (result or 'decompress' not in steps):
-            input_dir = result or settings.BOFIP_EXTRACTED_DIR
+            input_dir = result or settings.EXTRACTED_DIR
             transform_data(input_dir)
+
+        if 'download_documentation' in steps and (result or 'transform' not in steps):
+            download_documentation()
 
         logger.info("Pipeline BOFiP terminé avec succès")
         return result
@@ -129,7 +140,7 @@ def main():
     parser.add_argument(
         '--steps',
         nargs='+',
-        choices=['extract', 'decompress', 'transform'],
+        choices=['extract', 'decompress', 'transform', 'download_documentation'],
         help='Étapes à exécuter (par défaut: toutes les étapes)'
     )
     

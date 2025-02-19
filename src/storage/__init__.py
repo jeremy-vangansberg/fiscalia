@@ -5,7 +5,7 @@ from .azure import AzureStorageProvider
 def get_storage_provider():
     """Factory pour créer le provider de stockage approprié"""
     if settings.STORAGE_TYPE == "local":
-        return LocalStorageProvider(settings.BOFIP_RAW_DIR)
+        return LocalStorageProvider(settings.RAW_DIR)
     elif settings.STORAGE_TYPE == "azure":
         if not all([
             settings.AZURE_STORAGE_ACCOUNT,

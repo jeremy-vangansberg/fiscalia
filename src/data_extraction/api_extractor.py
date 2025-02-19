@@ -78,3 +78,4 @@ class BofipExtractor:
         except Exception as e:
             logger.error(f"Erreur pendant le téléchargement: {str(e)}", exc_info=True)
             raise 
+
