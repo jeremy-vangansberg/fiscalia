@@ -1,5 +1,13 @@
 ### 1. Modèle Conceptuel de Données (MCD)
 
+**Introduction**
+
+Dans le cadre de ce projet, les données extraites de BOFiP (contenant un contenu HTML et des métadonnées issues du fichier XML) seront ultérieurement consommées par un système RAG (Retrieval Augmented Generation). Pour cette raison, il est prioritaire de faciliter l'extraction et la vectorisation des passages pertinents.
+
+Normaliser excessivement ces données en créant de nombreuses tables et relations n'apporterait pas de bénéfices significatifs pour la phase de vectorisation, puisque l'objectif est de disposer rapidement d'un corpus textuel et de ses métadonnées pour alimenter un modèle de langage.
+
+Nous avons donc choisi de regrouper toutes les informations dans une table unique, ce qui simplifie l'import, la gestion et l'extraction des données, tout en permettant de conserver une trace complète des métadonnées au format JSON pour d'éventuelles analyses ultérieures.
+
 **Analyse du domaine :**  
 Les données issues de BOFiP se présentent sous la forme d’un document constitué de deux fichiers complémentaires :  
 - **data.html** contient le contenu principal sous format HTML,  
@@ -9,7 +17,7 @@ Les données issues de BOFiP se présentent sous la forme d’un document consti
 Après analyse, nous avons identifié une entité centrale, **DOCUMENT**, qui regroupe toutes les informations nécessaires. En effet, le contenu HTML et les métadonnées sont étroitement liés pour chaque document, et la structure d’arborescence d’origine (chemin, nom de fichier, date de publication, type de document, etc.) est principalement descriptive.  
 Cela justifie de modéliser l’ensemble sous une seule entité dans le MCD, sans nécessiter de normalisation poussée en entités séparées (comme Auteur ou Catégorie) pour ce contexte.
 
-**schéma MCD**
+**Schéma MCD**
 
 ```mermaid
 erDiagram
@@ -84,7 +92,7 @@ erDiagram
 Pour le MPD, nous avons défini les types de données adaptés à un SGBD relationnel (MySQL ou PostgreSQL) avec les contraintes nécessaires (clé primaire, index éventuels, suivi d’import).  
 Nous avons choisi de stocker le contenu HTML et les métadonnées sous forme JSON afin de garder une flexibilité maximale pour l’interrogation et le traitement ultérieur (notamment pour la vectorisation via Chroma).
 
-**MPD en Mermaid :**
+**Schéma MPD**
 
 ```mermaid
 erDiagram
@@ -155,3 +163,6 @@ Dans ce contexte, le regroupement des informations dans une seule table permet d
 - Faciliter l’extraction du texte pour la vectorisation,
 - Répondre aux exigences RGPD en centralisant le contrôle des données,
 - Éviter une sur-normalisation qui pourrait complexifier inutilement le système sans apporter de bénéfices analytiques supplémentaires.
+
+**Contexte d'utilisation RAG :**  
+Ces données seront ultérieurement consommées par un système RAG (Retrieval Augmented Generation) pour alimenter un modèle de langage. L'objectif étant de disposer rapidement d'un corpus textuel complet associé à ses métadonnées, la solution dénormalisée adoptée ici est idéale. Elle permet d'extraire facilement le contenu et les informations associées pour la vectorisation, sans passer par des jointures complexes entre tables. Ainsi, ce modèle, tout en respectant la méthode Merise, répond précisément aux besoins actuels du projet et reste évolutif pour des traitements futurs.
