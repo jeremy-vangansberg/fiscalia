@@ -1,139 +1,39 @@
-# TODO List du Projet
+# TODO List - Critères d'Évaluation
 
-## 🗺️ Roadmap
-1. **Phase actuelle - C1 : Extraction des données (En cours)**
-   - Finalisation de l'extraction des données BOFiP
-   - Documentation complète du processus
+## C1. Automatiser l'extraction de données
+- [ ] La présentation du projet et de son contexte est complète : acteurs, objectifs fonctionnels et techniques, environnements et contraintes techniques, budget, organisation du travail et planification
+- [ ] Les spécifications techniques précisent : les technologies et outils, les services externes, les exigences de programmation (langages), l'accessibilité (disponibilité, accès)
+- [ ] Le périmètre des spécifications techniques est complet : il couvre l'ensemble des moyens techniques à mettre en œuvre pour l'extraction et l'agrégation des données en un jeu de données brutes final
+- [x] Le script d'extraction des données est fonctionnel : toutes les données visées sont effectivement récupérées à l'issue de l'exécution du script
+- [x] Le script comprend un point de lancement, l'initialisation des dépendances et des connexions externes, les règles logiques de traitement, la gestion des erreurs et des exceptions, la fin du traitement et la sauvegarde des résultats
+- [x] Le script d'extraction des données est versionné et accessible depuis un dépôt Git
+- [x] L'extraction des données est faite depuis un mix entre au moins les sources suivantes : un service web (API REST), un fichier de données, un scraping, une base de données et un système big data
 
-2. **Prochaine phase - C4 & C3 : Modélisation et Ingestion**
-   - Conception du modèle de données
-   - Mise en place de la base de données
-   - Développement du script d'ingestion
-   - Documentation RGPD
+## C2. Développer des requêtes SQL d'extraction
+- [ ] Les requêtes de type SQL pour la collecte de données sont fonctionnelles : les données visées sont effectivement extraites suites à l'exécution des requêtes
+- [ ] La documentation des requêtes met en lumière choix de sélections, filtrages, conditions, jointures, etc., en fonction des objectifs de collecte
+- [ ] La documentation explicite les optimisations appliquées aux requêtes
 
-3. **Phase finale - C5 & C2 : API et Requêtes**
-   - Développement de l'API REST
-   - Conception des requêtes SQL optimisées
-   - Documentation API
+## C3. Développer des règles d'agrégation de données
+- [ ] Le script d'agrégation des données est fonctionnel : les données sont effectivement agrégées, nettoyées et normalisées en un seul jeu de données à l'issue de l'exécution du script
+- [x] Le script d'agrégation des données est versionné et accessible depuis un dépôt Git
+- [ ] La documentation du script d'agrégation est complète : dépendances, commandes, les enchaînements logiques de l'algorithme, les choix de nettoyage et d'homogénéisation des formats données
 
-## 🎯 Vue d'ensemble du projet
+## C4. Créer une base de données conforme au RGPD
+- [x] Les modélisations des données respectent la méthode et le formalisme Merise
+- [ ] Le modèle physique des données est fonctionnel : il est intégré avec succès lors de la création de la base de données, sans erreur
+- [ ] La base de données est choisie au regard de la modélisation des données et des contraintes du projet
+- [ ] La reproduction des procédures d'installation décrites (base de données et API) a pour résultat un système conforme aux objets techniques attendus
+- [ ] Le script d'import fourni est fonctionnel : il permet l'insertion des données dans le système mis en place
+- [ ] La documentation technique du script d'import est versionné à la racine du même dépôt Git que celui utilisé pour le script d'import
+- [ ] Les documentations techniques des scripts couvrent les dépendances nécessaires pour la réutilisation des scripts et les commandes pour l'exécution
+- [ ] Le registre des traitements de données personnelles intègre l'ensemble des traitements de données personnelles impliqués dans la base de données
+- [ ] Les procédures de tri des données personnelles pour la mise en conformité de la base de données avec le RGPD sont rédigées
+- [ ] Les procédures de tri détaillent les traitements de conformité (automatisés ou non) à appliquer ainsi que leur fréquence d'exécution
 
-### 📋 État d'avancement global
-- [~] C1 - Automatiser l'extraction de données (70%)
-- [ ] C2 - Développer des requêtes SQL d'extraction
-- [ ] C3 - Développer des règles d'agrégation de données
-- [ ] C4 - Créer une base de données conforme au RGPD
-- [ ] C5 - Développer une API REST
-
-## 📝 Tâches détaillées par compétence
-
-### C1 - Automatiser l'extraction de données
-#### Documentation
-- [x] Rédiger la présentation du projet
-  - [x] Acteurs (BOFiP, Utilisateurs)
-  - [x] Objectifs fonctionnels et techniques (Extraction et mise à disposition des données fiscales)
-  - [x] Environnements et contraintes techniques (Python, API BOFiP)
-  - [ ] Budget
-  - [x] Organisation du travail (Git, Tests)
-  - [ ] Planification
-
-#### Spécifications techniques
-- [x] Documenter les technologies et outils (Python, Poetry)
-- [x] Documenter les services externes (API BOFiP)
-- [x] Documenter les exigences de programmation (Python 3.8+)
-- [x] Documenter l'accessibilité (Configuration des chemins)
-
-#### Développement
-- [~] Implémenter le script d'extraction
-  - [x] Point de lancement (scripts/run_bofip_data_collection.py)
-  - [x] Initialisation des dépendances (pyproject.toml)
-  - [x] Connexions externes (API BOFiP)
-  - [x] Règles logiques de traitement
-  - [x] Gestion des erreurs et exceptions
-  - [~] Sauvegarde des résultats (En cours d'optimisation)
-- [x] Versionner le code sur Git
-
-### C2 - Développer des requêtes SQL d'extraction
-*(À développer lors de la phase API)*
-- [ ] Développer les requêtes SQL
-- [ ] Documenter les choix de requêtes
-  - [ ] Sélections
-  - [ ] Filtrages
-  - [ ] Conditions
-  - [ ] Jointures
-- [ ] Documenter les optimisations
-
-### C3 - Développer des règles d'agrégation de données
-#### Script d'agrégation
-- [ ] Développer le script d'ingestion
-  - [ ] Validation des données
-  - [ ] Transformation au format base de données
-  - [ ] Gestion des mises à jour
-- [ ] Versionner le code
-
-#### Documentation
-- [ ] Documenter les dépendances
-- [ ] Documenter les commandes
-- [ ] Documenter l'algorithme d'ingestion
-- [ ] Documenter les transformations
-- [ ] Documenter la stratégie de mise à jour
-
-### C4 - Créer une base de données conforme au RGPD
-#### Modélisation (Prioritaire)
-- [ ] Créer le modèle conceptuel (MCD)
-  - [ ] Identifier les entités principales
-  - [ ] Définir les relations
-  - [ ] Documenter les cardinalités
-- [ ] Créer le modèle physique (MPD)
-- [ ] Choisir le SGBD adapté (PostgreSQL envisagé)
-
-#### Implémentation
-- [ ] Créer la base de données
-- [ ] Développer le script d'import
-- [ ] Documenter l'installation
-- [ ] Documenter les dépendances
-- [ ] Documenter les commandes
-
-#### RGPD
-- [ ] Créer le registre des traitements
-- [ ] Rédiger les procédures de tri
-- [ ] Documenter la fréquence d'exécution
-
-### C5 - Développer une API REST
-*(À développer après la base de données)*
-#### Documentation
-- [ ] Documenter les endpoints
-- [ ] Documenter l'authentification
-- [ ] Documenter les autorisations
-- [ ] Utiliser le standard OpenAPI
-
-#### Développement
-- [ ] Implémenter l'authentification
-- [ ] Implémenter les endpoints
-- [ ] Tester l'API
-
-## 📊 Suivi des progrès
-
-### Points forts actuels
-- Architecture modulaire bien structurée
-- Tests unitaires en place
-- Gestion des configurations robuste
-- Extraction des données BOFiP fonctionnelle
-
-### Points à améliorer
-- Documentation du projet à compléter
-- Planification détaillée à établir
-- Réflexion sur la modélisation des données à approfondir
-
-### Prochaines étapes prioritaires
-1. Finaliser la documentation C1
-2. Commencer la modélisation de la base de données (C4)
-3. Concevoir le script d'ingestion (C3)
-
-## 💡 Notes et idées
-- Utiliser PostgreSQL avec JSONB pour la flexibilité du schéma
-- Prévoir une stratégie de mise à jour incrémentale des données
-- Considérer l'utilisation de FastAPI pour l'API REST
-
----
-*Dernière mise à jour : 19 février 2024* 
+## C5. Développer une API REST
+- [ ] La documentation technique de l'API (REST) couvre tous les points de terminaisons
+- [ ] La documentation technique couvre les règles d'authentification et/ou d'autorisation de l'API
+- [ ] La documentation technique respecte les standards du modèle choisi (par exemple OpenAPI)
+- [ ] L'API REST est fonctionnelle pour l'accès aux données du projet : elle restreint par une autorisation (ou authentification) l'accès aux données
+- [ ] L'API REST est fonctionnelle pour la mise à disposition : elle permet la récupération de l'ensemble des données nécessaires au projet, comme prévu selon les spécifications données
