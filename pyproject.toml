@@ -17,6 +17,7 @@ mysql-connector-python = "^8.3.0"
 pymysql = "^1.1.0"
 cryptography = "^42.0.0"
 pydantic-settings = "^2.1.0"
+annotated-types = "^0.6.0"
 
 [tool.poetry.group.dev.dependencies]
 jupyter = "^1.0.0"

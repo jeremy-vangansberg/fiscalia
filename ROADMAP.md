@@ -8,10 +8,10 @@
 - [ ] Tests d'extraction complets
 
 ## Phase 2 : Base de Données et Transformation (À venir)
-- [ ] Modélisation Merise (MCD/MPD)
-- [ ] Configuration PostgreSQL
+- [x] Modélisation Merise (MCD/MPD)
+- [x] Configuration MySQL
 - [ ] Scripts de transformation des données
-- [ ] Documentation RGPD
+- [x] Documentation RGPD
 - [ ] Tests d'intégration
 
 ## Phase 3 : API et Documentation (À venir)

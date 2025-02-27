@@ -5,10 +5,8 @@ Projet de collecte et d'analyse des données fiscales françaises. Ce projet fai
 ## Prérequis
 
 ### Base de données
-1. Installer MySQL sur votre système :
-   - Sur macOS : `brew install mysql`
-   - Sur Ubuntu/Debian : `sudo apt install mysql-server`
-   - Sur Windows : Télécharger et installer MySQL depuis le site officiel
+1. Installer et configurer MySQL sur votre système.
+   Pour des instructions détaillées, consultez [le guide d'installation MySQL](docs/database_requirements.md).
 
 2. Démarrer le service MySQL :
    - Sur macOS : `brew services start mysql`

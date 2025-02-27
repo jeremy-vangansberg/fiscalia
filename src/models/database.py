@@ -1,8 +1,14 @@
 from datetime import date, datetime
-from typing import Optional
-from sqlmodel import Field, SQLModel, JSON
-from pydantic import condecimal
+from typing import Optional, Dict, Any
+from sqlmodel import Field, SQLModel
+from sqlalchemy import JSON, Text, String, DateTime, Date, Index, Column
+from pydantic import validator
+import datetime as dt
+import re
 
+def get_utc_now() -> datetime:
+    """Retourne la date et l'heure actuelles en UTC."""
+    return datetime.now(dt.UTC)
 
 class BofipDocument(SQLModel, table=True):
     """
@@ -43,41 +49,71 @@ class BofipDocument(SQLModel, table=True):
     # Identifiants et métadonnées primaires
     id: Optional[int] = Field(default=None, primary_key=True)
     document_identifier: str = Field(
-        index=True,
-        max_length=100,
+        sa_column=Column(String(100), index=True),
         description="Identifiant unique du document (ex: BOI-LETTRE-000048-20130826)"
     )
-    title: Optional[str] = Field(default=None, max_length=255)
-    publication_date: Optional[date] = Field(default=None, index=True)
+    title: Optional[str] = Field(default=None, sa_column=Column(String(255)))
+    publication_date: Optional[date] = Field(
+        default=None,
+        sa_column=Column(Date, index=True)
+    )
     
     # Métadonnées Dublin Core
-    creator: Optional[str] = Field(default=None, max_length=100)
-    publisher: Optional[str] = Field(default=None, max_length=100)
-    language: Optional[str] = Field(default=None, max_length=50)
-    format: Optional[str] = Field(default=None, max_length=50)
-    source: Optional[str] = Field(default=None, max_length=255)
-    rights: Optional[str] = Field(default=None, max_length=255)
-    coverage: Optional[str] = Field(default=None, max_length=255)
-    subject: Optional[str] = Field(default=None, max_length=255)
-    relation: Optional[str] = Field(default=None, max_length=255)
+    creator: Optional[str] = Field(default=None, sa_column=Column(String(100)))
+    publisher: Optional[str] = Field(default=None, sa_column=Column(String(100)))
+    language: Optional[str] = Field(default=None, sa_column=Column(String(50)))
+    format: Optional[str] = Field(default=None, sa_column=Column(String(50)))
+    source: Optional[str] = Field(default=None, sa_column=Column(String(255)))
+    rights: Optional[str] = Field(default=None, sa_column=Column(String(255)))
+    coverage: Optional[str] = Field(default=None, sa_column=Column(String(255)))
+    subject: Optional[str] = Field(default=None, sa_column=Column(String(255)))
+    relation: Optional[str] = Field(default=None, sa_column=Column(String(255)))
     
     # Métadonnées spécifiques BOFiP
-    contenu_type: Optional[str] = Field(default=None, max_length=50)
-    contenu_niveau: Optional[str] = Field(default=None, max_length=50)
-    directeur_publication: Optional[str] = Field(default=None, max_length=255)
-    isbn: Optional[str] = Field(default=None, max_length=50)
+    contenu_type: Optional[str] = Field(default=None, sa_column=Column(String(50)))
+    contenu_niveau: Optional[str] = Field(default=None, sa_column=Column(String(50)))
+    directeur_publication: Optional[str] = Field(default=None, sa_column=Column(String(255)))
+    isbn: Optional[str] = Field(default=None, sa_column=Column(String(50)))
     
     # Informations sur les fichiers
-    file_path: str = Field(max_length=500)
-    data_html_file: str = Field(max_length=255)
-    document_xml_file: str = Field(max_length=255)
+    file_path: str = Field(sa_column=Column(String(500)))
+    data_html_file: str = Field(sa_column=Column(String(255)))
+    document_xml_file: str = Field(sa_column=Column(String(255)))
     
     # Contenu et métadonnées
-    html_content: Optional[str] = Field(default=None)
-    metadata: Optional[dict] = Field(default=None, sa_column=JSON)
+    html_content: Optional[str] = Field(
+        default=None,
+        sa_column=Column(Text)
+    )
+    document_metadata: Optional[Dict[str, Any]] = Field(
+        default=None,
+        sa_column=Column(JSON)
+    )
     
     # Métadonnées techniques
     date_import: datetime = Field(
-        default_factory=datetime.now(datetime.UTC),
-        nullable=False
-    ) 
+        default_factory=get_utc_now,
+        sa_column=Column(DateTime(timezone=True), nullable=False)
+    )
+
+    # Configuration des index
+    __table_args__ = (
+        Index('idx_document_identifier', 'document_identifier'),
+        Index('idx_publication_date', 'publication_date'),
+        Index('idx_html_content', 'html_content', mysql_prefix='FULLTEXT'),
+    )
+    
+    @validator('document_identifier')
+    def validate_document_identifier(cls, v: str) -> str:
+        """Valide le format de l'identifiant du document.
+        
+        Format attendu : BOI-CATEGORIE-NUMERO-AAAAMMJJ
+        Exemple : BOI-LETTRE-000048-20130826
+        """
+        pattern = r'^BOI-[A-Z]+-\d{6}-\d{8}$'
+        if not re.match(pattern, v):
+            raise ValueError(
+                'document_identifier doit suivre le format BOI-CATEGORIE-NUMERO-AAAAMMJJ'
+                ' (ex: BOI-LETTRE-000048-20130826)'
+            )
+        return v 
