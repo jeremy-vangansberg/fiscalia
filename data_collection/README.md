@@ -13,12 +13,6 @@ Projet de collecte et d'analyse des données fiscales françaises. Ce projet fai
    - Sur Ubuntu/Debian : `sudo service mysql start`
    - Sur Windows : Via le gestionnaire de services
 
-3. Configurer un utilisateur MySQL avec les droits nécessaires :
-```sql
-CREATE USER 'your_user'@'localhost' IDENTIFIED BY 'your_password';
-GRANT ALL PRIVILEGES ON *.* TO 'your_user'@'localhost';
-FLUSH PRIVILEGES;
-```
 
 ## Installation
 
