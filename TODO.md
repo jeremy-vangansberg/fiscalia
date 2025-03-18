@@ -6,3 +6,6 @@
 - Identifier les services Azure pouvant accéder au processus
 - Sélectionner une version de Mistral performante en français
 - Rendre la gestion de la base de données modulaire en fonction de la configuration choisie (local/Azure)
+- Évaluer la pertinenence d'un pipeline airflow pour la *data collection*
+- Ajouter un pipeline de CI/CD
+- Effecuter un pipeline Azure data factory pour gérer la décompression des fichiers BOFiP sur Azure
