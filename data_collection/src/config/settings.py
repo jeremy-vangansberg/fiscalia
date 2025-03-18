@@ -6,9 +6,18 @@ from pydantic_settings import BaseSettings, SettingsConfigDict
 PROJECT_ROOT = Path(__file__).parent.parent.parent
 
 class Settings(BaseSettings):
-    # Configuration du logging
+    """Configuration de l'application via variables d'environnement"""
+    
+    # Spécifier le fichier .env et son emplacement
+    model_config = SettingsConfigDict(
+        env_file=".env",
+        env_file_encoding="utf-8",
+        case_sensitive=True,
+    )
+    
+    # Logging
     LOG_LEVEL: str = "INFO"
-
+    
     # Configuration de la base de données
     DB_HOST: str = "localhost"
     DB_PORT: int = 3306
@@ -20,36 +29,35 @@ class Settings(BaseSettings):
     # Configuration du stockage
     STORAGE_TYPE: Literal["local", "azure"] = "local"
     
-    # Chemins des données (local)
-    DATA_DIR: Path = PROJECT_ROOT / "data"
+    # Chemins des données
+    BASE_DIR: Path = Path(__file__).parent.parent.parent
+    DATA_DIR: Path = BASE_DIR / "data"
     RAW_DIR: Path = DATA_DIR / "raw"
     DOCUMENTATION_DIR: Path = DATA_DIR / "documentation"
     EXTRACTED_DIR: Path = DATA_DIR / "extracted"
     
-    # Pour Azure Data Lake Gen2
+    # Configuration Azure
     AZURE_STORAGE_ACCOUNT: Optional[str] = None
     AZURE_STORAGE_KEY: Optional[str] = None
     AZURE_CONTAINER: Optional[str] = None
-    AZURE_DIRECTORY: Optional[str] = "bofip"
+    AZURE_DIRECTORY: Optional[str] = None
+    AZURE_CONNECTION_STRING: Optional[str] = None
+    AZURE_CONTAINER_NAME: Optional[str] = None
     
     # Configuration BOFIP API
     BOFIP_API_URL: str = "https://data.economie.gouv.fr/api/explore/v2.1/catalog/datasets/bofip-impots/records"
     BOFIP_API_LIMIT: int = 20
     BOFIP_DOCUMENTATION_URL: str = "https://data.economie.gouv.fr/api/datasets/1.0/bofip-impots/attachments/bofip_documentation_pdf/"
     BOFIP_DOCUMENTATION_FILENAME: str = "bofip_documentation.pdf"
-    BOFIP_DOCUMENTATION_PATH: Path = DOCUMENTATION_DIR / BOFIP_DOCUMENTATION_FILENAME   
     
+    @property
+    def BOFIP_DOCUMENTATION_PATH(self) -> Path:
+        return self.DATA_DIR / "documentation" / self.BOFIP_DOCUMENTATION_FILENAME
+
     # Configuration API
     API_HOST: str = "0.0.0.0"
     API_PORT: int = 8000
     API_WORKERS: int = 4
-    
-    model_config = SettingsConfigDict(
-        env_file=".env",
-        env_file_encoding="utf-8",
-        case_sensitive=True,
-        extra="ignore"
-    )
 
     def __init__(self, **kwargs):
         if "_env_file" in kwargs:
@@ -64,5 +72,5 @@ class Settings(BaseSettings):
         ]:
             directory.mkdir(parents=True, exist_ok=True)
 
-# Instance singleton des settings
+# Instance unique des settings
 settings = Settings() 

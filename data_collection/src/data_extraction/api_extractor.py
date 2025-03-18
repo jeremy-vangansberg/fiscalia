@@ -1,17 +1,57 @@
 import requests
 import logging
+from pathlib import Path
 from src.config.settings import settings
-from src.storage import get_storage_provider
+from src.data_transformation.storage_handler import LocalStorageHandler, AzureStorageHandler
+from io import BytesIO
 
 logger = logging.getLogger(__name__)
 
 class BofipExtractor:
     def __init__(self):
-        self.base_url = settings.BOFIP_API_URL
+        self.api_url = settings.BOFIP_API_URL
         self.limit = settings.BOFIP_API_LIMIT
-        self.storage = get_storage_provider()
-        logger.info(f"Initialisation BofipExtractor avec URL: {self.base_url}, limite: {self.limit}")
+        
+        # Initialiser le bon handler de stockage
+        if settings.STORAGE_TYPE == "azure":
+            self.storage_handler = AzureStorageHandler()
+        else:
+            self.storage_handler = LocalStorageHandler()
+        
+        logger.info(f"Initialisation BofipExtractor avec URL: {self.api_url}, limite: {self.limit}")
         logger.info(f"Type de stockage: {settings.STORAGE_TYPE}")
+
+    def save_file(self, content: bytes, destination: str) -> str:
+        """Sauvegarde le contenu selon le type de stockage configuré"""
+        if isinstance(self.storage_handler, AzureStorageHandler):
+            try:
+                logger.info(f"Début de l'upload Azure pour {destination}")
+                logger.info(f"Taille du contenu à uploader: {len(content)} bytes")
+                
+                # Création du BytesIO
+                logger.info("Création du buffer BytesIO")
+                data = BytesIO(content)
+                
+                # Obtention du file client
+                logger.info(f"Obtention du file client pour {destination}")
+                file_client = self.storage_handler.file_system_client.get_file_client(destination)
+                
+                # Upload des données
+                logger.info("Début de l'upload des données")
+                file_client.upload_data(data, overwrite=True)
+                logger.info("Upload terminé avec succès")
+                
+                return destination
+                
+            except Exception as e:
+                logger.error(f"Erreur lors de l'upload Azure: {str(e)}", exc_info=True)
+                raise
+        else:
+            # Sauvegarder en local
+            output_path = Path(destination)
+            output_path.parent.mkdir(parents=True, exist_ok=True)
+            output_path.write_bytes(content)
+            return str(output_path)
 
     def extract_data(self):
         """Exécute l'extraction complète des données"""
@@ -28,7 +68,16 @@ class BofipExtractor:
             
             # Téléchargement et sauvegarde du fichier
             logger.info("Début du téléchargement...")
-            file_path = self.download_file(url, file_name)
+            response = requests.get(url)
+            response.raise_for_status()
+            
+            # Construire le chemin de destination
+            if isinstance(self.storage_handler, AzureStorageHandler):
+                destination = file_name  # Chemin relatif pour Azure
+            else:
+                destination = str(settings.RAW_DIR / file_name)  # Chemin absolu pour local
+            
+            file_path = self.save_file(response.content, destination)
             logger.info(f"Fichier sauvegardé à: {file_path}")
                 
             return file_path
@@ -39,8 +88,8 @@ class BofipExtractor:
 
     def get_latest_stock_file(self):
         """Récupère les informations du dernier fichier stock disponible"""
-        logger.info(f"Requête API: {self.base_url}?limit={self.limit}")
-        response = requests.get(f"{self.base_url}?limit={self.limit}")
+        logger.info(f"Requête API: {self.api_url}?limit={self.limit}")
+        response = requests.get(f"{self.api_url}?limit={self.limit}")
         
         if response.status_code != 200:
             logger.error(f"Erreur API: Status {response.status_code}")
@@ -62,20 +111,12 @@ class BofipExtractor:
         logger.info(f"Dernier fichier stock: {latest.get('nom_du_fichier', 'nom inconnu')}")
         return latest
     
-    def download_file(self, url, file_name):
-        """Télécharge le fichier depuis l'URL donnée et le sauvegarde"""
-        try:
-            logger.info("Téléchargement du fichier...")
-            response = requests.get(url)
-            response.raise_for_status()
-            
-            # Utilisation du provider de stockage pour sauvegarder le fichier
-            file_path = self.storage.save_file(response.content, file_name)
-            logger.info(f"Fichier sauvegardé avec succès: {file_path}")
-            
-            return file_path
-            
-        except Exception as e:
-            logger.error(f"Erreur pendant le téléchargement: {str(e)}", exc_info=True)
-            raise 
+    def download_file(self, url: str, destination: str) -> str:
+        """Télécharge un fichier depuis une URL"""
+        logger.info("Téléchargement du fichier...")
+        response = requests.get(url)
+        response.raise_for_status()
+        
+        # Utiliser la nouvelle méthode save_file
+        return self.save_file(response.content, destination)
 

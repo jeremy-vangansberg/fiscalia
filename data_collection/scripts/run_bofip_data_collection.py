@@ -21,6 +21,7 @@ import argparse
 from pathlib import Path
 from src.data_extraction.api_extractor import BofipExtractor
 from src.data_transformation.decompressor import Decompressor
+from src.data_transformation.storage_handler import LocalStorageHandler, AzureStorageHandler
 from src.config.settings import settings
 
 # Configuration du logging avec format timestamp pour le suivi
@@ -58,7 +59,19 @@ def decompress_data(file_path: str):
         Path: Chemin du répertoire contenant les fichiers décompressés
     """
     logger.info(f"Début de la décompression du fichier : {file_path}")
-    decompressor = Decompressor(output_dir=settings.EXTRACTED_DIR)
+    # Choisir le handler en fonction de la configuration
+    if settings.STORAGE_TYPE == "azure":
+        handler = AzureStorageHandler(
+            connection_string=settings.AZURE_CONNECTION_STRING,
+            container_name=settings.AZURE_CONTAINER_NAME
+        )
+    else:
+        handler = LocalStorageHandler()
+    
+    decompressor = Decompressor(
+        output_dir=settings.EXTRACTED_DIR,
+        storage_handler=handler
+    )
     extracted_dir = decompressor.decompress(file_path)
     logger.info(f"Fichiers BOFiP décompressés dans : {extracted_dir}")
     return extracted_dir
