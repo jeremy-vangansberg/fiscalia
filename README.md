@@ -4,7 +4,7 @@
 Fiscalia est un projet visant à développer un Large Language Model (LLM) spécialisé dans le domaine de la fiscalité. L'objectif est de créer un assistant intelligent capable de répondre avec précision aux questions fiscales, en s'appuyant sur une base de connaissances spécialisée et régulièrement mise à jour.
 
 ## Sources de Données
-Le projet s'appuie principalement sur les données open source du Bulletin Officiel des Finances Publiques (BOFiP), qui constitue la documentation officielle de l'administration fiscale française. Ces données sont :
+Le projet s'appuie principalement sur les données open source du [Bulletin Officiel des Finances Publiques (BOFiP)](https://data.economie.gouv.fr/explore/dataset/bofip-impots/api/), qui constitue la documentation officielle de l'administration fiscale française. Ces données sont :
 - Publiques et accessibles à tous
 - Régulièrement mises à jour
 - Faisant autorité en matière fiscale
@@ -20,12 +20,7 @@ Le projet s'appuie principalement sur les données open source du Bulletin Offic
 ## Modules
 
 ### Data Collection
-Module de collecte de données fiscales depuis diverses sources :
-- Documentation officielle
-- BOFiP (source principale)
-- Textes de loi
-- Jurisprudence
-- Articles spécialisés  
+Module de collecte de données fiscales depuis diverses sources le BOFiP. L'objectif est d'automatiser la collecte de données et rendre le code modulaire en fonction de la destination choisie (local/Azure).
 [Plus de détails](./data_collection/README.md)
 
 ### Machine Learning (work in progress)
@@ -36,7 +31,8 @@ L'idée est d'adopter une approche basée sur des agents avec les outils suivant
 - Un outil de recherche sur le web, limité à un périmètre restreint de ressources de qualité
 
 LLM envisagé :  
-- Une version de Mistral (à définir) qui démontre de bonnes performances en français  
+- Une version de Mistral (à définir) qui démontre de bonnes performances en français.
+Le but étant de choisir le modèle le plus économique possible et de le spécialiser uniquement sur cette orientée autour des questions fiscales et de comptabilité.
 [Plus de détails](./machine_learning/README.md)
 
 ## Installation
