@@ -28,12 +28,16 @@ Module de collecte de données fiscales depuis diverses sources :
 - Articles spécialisés
 [Plus de détails](./data_collection/README.md)
 
-### Machine Learning
-Module d'entraînement et d'optimisation du LLM :
-- Fine-tuning sur les données fiscales
-- Évaluation des performances
-- Amélioration continue du modèle
-- Validation des réponses avec les sources BOFiP
+### Machine Learning (work_in_progress)
+La partie machine learning va s'appuyer sur le framework LangChain.
+
+L'idée est de d'adopter une approche autours agents avec les tools suivants : 
+- Retriever sur les données du BOFiP avec une feature qui citera les sources
+- Un outil de recherche sur le web mais sur un scope restreint sur des ressources de qualité
+
+LLM à utiliser : 
+- Je songe à utiliser une version de Mistral (à définir) qui démontre de bonnes performances en français
+
 [Plus de détails](./machine_learning/README.md)
 
 ## Installation
