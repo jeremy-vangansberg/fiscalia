@@ -32,7 +32,7 @@ L'idée est d'adopter une approche basée sur des agents avec les outils suivant
 
 LLM envisagé :  
 - Une version de Mistral (à définir) qui démontre de bonnes performances en français.
-Le but étant de choisir le modèle le plus économique possible et de le spécialiser uniquement sur cette orientée autour des questions fiscales et de comptabilité.
+Le but étant de choisir le modèle le plus économique possible et de le spécialiser uniquement sur cette tâche orientée autour des questions fiscales et de comptabilité.
 [Plus de détails](./machine_learning/README.md)
 
 ## Installation
