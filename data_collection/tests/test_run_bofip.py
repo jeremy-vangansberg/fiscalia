@@ -1,7 +1,7 @@
 import pytest
 from unittest.mock import Mock, patch
 from pathlib import Path
-from scripts.run_bofip_data_collection import (
+from data_collection.src.airflow.dags.run_bofip_data_collection import (
     extract_data,
     decompress_data,
     transform_data,
