@@ -1,14 +1,18 @@
-resource "azurerm_storage_account" "fiscal_storage_account" {
-  name                     = var.storage_account_name
-  resource_group_name      = var.resource_group_name
-  location                 = var.location
-  account_tier             = "Standard"
-  account_replication_type = "LRS"
-  account_kind             = "StorageV2"
-  is_hns_enabled           = "true"
+resource "google_project_iam_member" "vertex_ai_roles" {
+  for_each = toset([
+    "roles/aiplatform.user",
+    "roles/storage.objectAdmin",
+  ])
+  project = var.project_id
+  role    = each.key
+  member  = "serviceAccount:${google_service_account.vertex_ai_sa.email}"
 }
 
-resource "azurerm_storage_data_lake_gen2_filesystem" "fiscal_data_lake_filesystem" {
-  name               = var.datalake_name
-  storage_account_id = azurerm_storage_account.fiscal_storage_account.id
+resource "google_service_account_key" "vertex_ai_key" {
+  service_account_id = google_service_account.vertex_ai_sa.name
+}
+
+resource "local_file" "vertex_ai_key_file" {
+  content  = base64decode(google_service_account_key.vertex_ai_key.private_key)
+  filename = "${path.module}/vertex_ai_key.json"
 }

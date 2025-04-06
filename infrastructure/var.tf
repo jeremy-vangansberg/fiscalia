@@ -1,15 +1,11 @@
-variable "resource_group_name" {
-  type    = string
+variable "project_id" {
+  description = "L'ID du projet GCP"
+  type        = string
+  default     = "fiscalia"
 }
 
-variable "location" {
-  type    = string
-}
-
-variable "storage_account_name" {
-  type    = string
-}
-
-variable "datalake_name" {
-  type    = string
+variable "region" {
+  description = "La région GCP"
+  type        = string
+  default     = "europe-west1"
 }

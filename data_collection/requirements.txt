@@ -1,0 +1,39 @@
+# LangChain + extensions
+langchain==0.1.14
+langchain-core==0.1.37
+langchain-community==0.0.27
+
+# Embeddings & Transformers
+sentence-transformers==2.6.1
+transformers==4.39.3
+huggingface-hub==0.22.2
+
+# Vector store
+chromadb==0.4.24
+
+# HTML/XML parsing
+beautifulsoup4==4.12.3
+lxml==5.1.0
+
+# Utilitaires
+tqdm==4.66.2
+python-dotenv==1.0.1
+rich==13.7.1
+
+# Streamlit pour UI prototype
+streamlit==1.32.2
+
+# LLM distant ou local
+openai==1.14.2
+llama-cpp-python==0.2.41  # si tu veux tester des modèles locaux
+
+# (Optionnel) pour ingestion multi-format
+unstructured==0.12.6
+
+# Pour agents avancés (optionnel)
+langgraph==0.0.24
+
+torch>=2.1.2
+transformers==4.39.3
+huggingface-hub==0.22.2
+sentence-transformers>=2.6.1 
