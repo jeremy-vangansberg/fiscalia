@@ -1,0 +1,22 @@
+version: "3.8"
+
+services:
+  api:
+    build: ./api
+    container_name: fiscalia_api
+    ports:
+      - "8080:8080"
+    environment:
+      - GOOGLE_APPLICATION_CREDENTIALS=/app/credentials.json
+    volumes:
+      - ~/.config/gcloud/application_default_credentials.json:/app/credentials.json:ro
+
+  ui:
+    build: ./web_ui
+    container_name: fiscalia_ui
+    ports:
+      - "8501:8501"
+    depends_on:
+      - api
+    environment:
+      - API_URL=http://api:8080/ask
