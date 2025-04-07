@@ -1,0 +1,37 @@
+[tool.poetry]
+name = "fiscalia_data_collection"
+version = "0.1.0"
+description = "Collecte et traitement des données fiscales"
+authors = ["Your Name <your.email@example.com>"]
+readme = "README.md"
+packages = [{include = "src"}]
+
+[tool.poetry.dependencies]
+python = ">=3.9,<4.0.0"
+requests = "^2.31.0"
+beautifulsoup4 = "^4.12.0"
+lxml = "^4.9.0"
+tqdm = "^4.66.0"
+sqlmodel = "^0.0.14"
+mysql-connector-python = "^8.3.0"
+pymysql = "^1.1.0"
+cryptography = "^42.0.0"
+pydantic-settings = "^2.1.0"
+annotated-types = "^0.6.0"
+azure-storage-blob = "12.25.0"
+azure-identity = "1.12.0"
+azure-storage-file-datalake = "12.11.0"
+langchain-core = "^0.3.51"
+
+[tool.poetry.group.dev.dependencies]
+jupyter = "^1.0.0"
+ipykernel = "^6.29.0"
+pytest = "^7.0.0"
+pytest-cov = "^3.0.0"
+black = "^24.1.0"
+isort = "^5.13.0"
+flake8 = "^7.0.0"
+
+[build-system]
+requires = ["poetry-core>=1.0.0"]
+build-backend = "poetry.core.masonry.api"

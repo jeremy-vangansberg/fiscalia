@@ -3,11 +3,12 @@
 # === Configuration ===
 BUCKET_NAME=fiscalia-455807-vector-store # 🔁 À adapter
 DEST_PREFIX="original_data"  # 🔁 Chemin dans le bucket
-BASE_PATH="../../data/"
+BASE_PATH="../../data"
 
 # === Fichiers à uploader ===
 FILES=(
   "$BASE_PATH/bofip/bofip_documents.jsonl"
+  "$BASE_PATH/bofip/bofip_bareme.jsonl"
   "$BASE_PATH/cgi/cgi_documents.jsonl"
 )
 

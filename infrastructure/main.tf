@@ -1,18 +1,20 @@
-resource "google_project_iam_member" "vertex_ai_roles" {
-  for_each = toset([
-    "roles/aiplatform.user",
-    "roles/storage.objectAdmin",
-  ])
+# Active Vertex AI
+resource "google_project_service" "vertex_ai" {
   project = var.project_id
-  role    = each.key
-  member  = "serviceAccount:${google_service_account.vertex_ai_sa.email}"
+  service = "aiplatform.googleapis.com"
 }
 
-resource "google_service_account_key" "vertex_ai_key" {
-  service_account_id = google_service_account.vertex_ai_sa.name
+# Active Cloud Storage
+resource "google_project_service" "storage" {
+  project = var.project_id
+  service = "storage.googleapis.com"
+  disable_on_destroy         = true
+  disable_dependent_services = true
 }
 
-resource "local_file" "vertex_ai_key_file" {
-  content  = base64decode(google_service_account_key.vertex_ai_key.private_key)
-  filename = "${path.module}/vertex_ai_key.json"
+# Bucket GCS pour tes vecteurs
+resource "google_storage_bucket" "vector_store_bucket" {
+  name                        = "${var.project_id}-vector-store"
+  location                    = var.region
+  uniform_bucket_level_access = true
 }
