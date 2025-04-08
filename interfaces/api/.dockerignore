@@ -1,2 +1,3 @@
 .env
 app/credentials/credentials.json
+.venv/

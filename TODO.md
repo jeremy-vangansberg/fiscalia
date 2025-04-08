@@ -1,4 +1,4 @@
 ### TODO List
-- vérifier la config dans collab
-- tester le colab
-- voir comment on versionne un colab depuis github
+- mise en page des sources
+- routing
+- relecture du code

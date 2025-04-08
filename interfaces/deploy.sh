@@ -116,7 +116,7 @@ gcloud run deploy "$SERVICE_NAME_API" \
   --region "$REGION" \
   --allow-unauthenticated \
   --service-account "$SA_EMAIL" \
-  --set-env-vars PROJECT_ID=$PROJECT_ID,MODEL_NAME_EMBEDDING=text-embedding-004,MODEL_NAME_LLM=gemini-2.0-flash-lite,TEMPERATURE_LLM=0.2,LOCATION=$LOCATION \
+  --set-env-vars PROJECT_ID=$PROJECT_ID,MODEL_NAME_EMBEDDING=text-embedding-004,MODEL_NAME_LLM=gemini-2.0-flash-lite,TEMPERATURE_LLM=0,LOCATION=$LOCATION \
   --memory 2Gi
 
   # --set-secrets GOOGLE_APPLICATION_CREDENTIALS=$SECRET_NAME:latest
