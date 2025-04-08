@@ -6,8 +6,8 @@ from langchain_core.prompts import PromptTemplate
 import os
 
 # Chargement des FAISS locaux
-BASE_PATH = "app/vector_stores"
-embeddings = VertexAI(model_name="text-embedding-004")
+BASE_PATH = os.path.join(os.path.dirname(__file__), "vector_stores")
+embeddings = VertexAI(model_name=os.getenv("MODEL_NAME_EMBEDDING"), project=os.getenv("PROJECT_ID"), location=os.getenv("LOCATION"))
 
 def load_db(name):
     return FAISS.load_local(
@@ -16,11 +16,11 @@ def load_db(name):
         allow_dangerous_deserialization=True
     )
 
-db_cgi = load_db("cgi_faiss")
-db_bofip = load_db("bofip_faiss")
-db_bofip_bareme = load_db("bofip_bareme_faiss")
+db_cgi = load_db("cgi")
+db_bofip = load_db("bofip")
+db_bofip_bareme = load_db("bofip_bareme")
 
-llm = VertexAI(model_name="gemini-2.0-flash-lite", temperature=0.3)
+llm = VertexAI(model_name=os.getenv("MODEL_NAME_LLM"), project=os.getenv("PROJECT_ID"), location=os.getenv("LOCATION"),temperature=os.getenv("TEMPERATURE_LLM"))
 
 prompt_template = """
 Tu es un assistant fiscal expert du Code Général des Impôts et du BOFiP.

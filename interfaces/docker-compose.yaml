@@ -6,10 +6,9 @@ services:
     container_name: fiscalia_api
     ports:
       - "8080:8080"
-    environment:
-      - GOOGLE_APPLICATION_CREDENTIALS=/app/credentials.json
-    volumes:
-      - ~/.config/gcloud/application_default_credentials.json:/app/credentials.json:ro
+    env_file:
+      - ./api/app/.env
+  
 
   ui:
     build: ./web_ui
