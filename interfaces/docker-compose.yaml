@@ -2,16 +2,23 @@ version: "3.8"
 
 services:
   api:
-    build: ./api
+    build:
+      context: ./api
+      dockerfile: Dockerfile.dev
     container_name: fiscalia_api
     ports:
       - "8080:8080"
     env_file:
       - ./api/app/.env
-  
+    volumes:
+      - ./api/app:/app/app          # Bind mount du code pour reload à chaud
+      - ./api/app/credentials:/app/app/credentials:ro
+      - ./api/app/vector_stores:/app/app/vector_stores:ro
 
   ui:
-    build: ./web_ui
+    build:
+      context: ./web_ui
+      dockerfile: Dockerfile.dev
     container_name: fiscalia_ui
     ports:
       - "8501:8501"
@@ -19,3 +26,5 @@ services:
       - api
     environment:
       - API_URL=http://api:8080/ask
+    volumes:
+      - ./web_ui:/app  # Pour permettre le reload en dev de Streamlit

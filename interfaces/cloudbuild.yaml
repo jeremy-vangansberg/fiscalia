@@ -1,0 +1,46 @@
+steps:
+  # Étape 1 : Build et push l'image de l'API
+  - name: 'gcr.io/cloud-builders/docker'
+    dir: 'api'
+    args: ['build', '-t', 'gcr.io/$PROJECT_ID/fiscalia-api', '.']
+
+  - name: 'gcr.io/cloud-builders/docker'
+    args: ['push', 'gcr.io/$PROJECT_ID/fiscalia-api']
+
+  # Étape 2 : Build et push l'image de l'UI Streamlit
+  - name: 'gcr.io/cloud-builders/docker'
+    dir: 'web_ui'
+    args: ['build', '-t', 'gcr.io/$PROJECT_ID/fiscalia-ui', '.']
+
+  - name: 'gcr.io/cloud-builders/docker'
+    args: ['push', 'gcr.io/$PROJECT_ID/fiscalia-ui']
+
+  # Étape 3 : Déploiement API sur Cloud Run
+  - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
+    entrypoint: gcloud
+    args:
+      [
+        'run', 'deploy', 'fiscalia-api',
+        '--image', 'gcr.io/$PROJECT_ID/fiscalia-api',
+        '--region', 'europe-west1',
+        '--platform', 'managed',
+        '--allow-unauthenticated',
+        '--set-env-vars',
+        'PROJECT_ID=$PROJECT_ID,MODEL_NAME_EMBEDDING=textembedding-gecko,MODEL_NAME_LLM=gemini-1.0-pro,TEMPERATURE_LLM=0.2'
+      ]
+
+  # Étape 4 : Déploiement UI sur Cloud Run
+  - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
+    entrypoint: gcloud
+    args:
+      [
+        'run', 'deploy', 'fiscalia-ui',
+        '--image', 'gcr.io/$PROJECT_ID/fiscalia-ui',
+        '--region', 'europe-west1',
+        '--platform', 'managed',
+        '--allow-unauthenticated'
+      ]
+
+images:
+  - 'gcr.io/$PROJECT_ID/fiscalia-api'
+  - 'gcr.io/$PROJECT_ID/fiscalia-ui'

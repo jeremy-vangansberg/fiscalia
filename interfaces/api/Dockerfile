@@ -7,6 +7,7 @@ RUN pip install --no-cache-dir -r requirements.txt
 
 COPY app ./app
 
-ENV GOOGLE_APPLICATION_CREDENTIALS=/app/app/credentials/credentials.json
+# Juste avant CMD
+RUN rm -f /app/app/credentials/credentials.json || true
 
-CMD ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8080"]
+CMD ["python", "-m", "uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8080"]

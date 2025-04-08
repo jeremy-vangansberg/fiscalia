@@ -33,6 +33,7 @@ if question:
             res.raise_for_status()
             data = res.json()
             answer = data["answer"]
+            reasoning = data.get("reasoning", "")
             sources = data.get("sources", [])
 
             # Format réponse + sources
@@ -42,7 +43,12 @@ if question:
 
         except Exception as e:
             full_answer = f"❌ Une erreur est survenue : {e}"
+            reasoning = ""
 
-    # Affiche la réponse
-    st.chat_message("assistant").markdown(full_answer)
-    st.session_state.messages.append({"role": "assistant", "content": full_answer})
+    # Affiche la réponse principale dans le chat
+    st.chat_message("assistant").markdown(answer)
+    st.session_state.messages.append({"role": "assistant", "content": answer})
+
+    # Affiche le raisonnement dans un bloc dépliant
+    with st.expander("🧠 Raisonnement détaillé"):
+        st.markdown(reasoning)

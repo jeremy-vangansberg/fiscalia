@@ -9,5 +9,8 @@ class QueryRequest(BaseModel):
 
 @app.post("/ask")
 def ask_question(payload: QueryRequest):
-    response = answer_question(payload.question)
-    return {"response": response}
+    result = answer_question(payload.question)
+    return {
+        "answer": result["answer"],
+        "reasoning": result["reasoning"]
+    }
