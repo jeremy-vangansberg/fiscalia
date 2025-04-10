@@ -26,5 +26,6 @@ services:
       - api
     environment:
       - API_URL=http://api:8080/ask
+      - USE_AUTH=false
     volumes:
       - ./web_ui:/app  # Pour permettre le reload en dev de Streamlit

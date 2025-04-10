@@ -71,6 +71,7 @@ def check_vector_stores():
     logger.info("Tous les vector stores sont présents et complets!")
     return True
 
+
 def start_api():
     """Démarre l'API Fiscalia"""
     logger.info("Démarrage de l'API Fiscalia...")

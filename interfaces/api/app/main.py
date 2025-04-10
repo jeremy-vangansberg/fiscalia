@@ -1,11 +1,11 @@
-from fastapi import FastAPI, Query, HTTPException, Request
-from fastapi.middleware.cors import CORSMiddleware
+from fastapi import FastAPI
 from pydantic import BaseModel
 from app.rag_predictor import answer_question
 import time
 import sys
 import logging
 from typing import Dict, Any, List, Optional
+
 
 # Configuration du logging
 logging.basicConfig(level=logging.INFO, 
@@ -29,14 +29,6 @@ app = FastAPI(
     version="1.0.0"
 )
 
-# Configuration CORS
-app.add_middleware(
-    CORSMiddleware,
-    allow_origins=["*"],  # À ajuster pour la production
-    allow_credentials=True,
-    allow_methods=["*"],
-    allow_headers=["*"],
-)
 
 # Modèle pour les sources détaillées
 class SourceDetail(BaseModel):

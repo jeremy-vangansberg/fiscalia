@@ -1,13 +1,28 @@
 import streamlit as st
-import requests
 import os 
 import time
-import random
+from google.auth.transport.requests import Request
+from google.oauth2 import id_token
+import requests
 
 # Configuration
 API_URL = os.getenv("API_URL", "http://api:8080/ask")
 MAX_RETRIES = int(os.getenv("MAX_RETRIES", "3"))
 RETRY_DELAY = int(os.getenv("RETRY_DELAY", "10"))
+DEBUG = os.getenv("DEBUG", None)
+USE_AUTH = os.getenv("USE_AUTH", "false").lower() == "true"
+
+def call_private_api(question, API_URL, timeout):
+    headers = {}
+
+    if USE_AUTH:
+        from google.auth.transport.requests import Request
+        from google.oauth2 import id_token
+        token = id_token.fetch_id_token(Request(), API_URL)
+        headers = {"Authorization": f"Bearer {token}"}
+
+    response = requests.post(API_URL, headers=headers, json={"question": question}, timeout=timeout)
+    return response
 
 # Configuration de la page
 st.set_page_config(
@@ -61,7 +76,12 @@ def set_question(question):
 
 # Panneau latéral (Sidebar)
 with st.sidebar:
-    # st.markdown("<h1>Fiscalia</h1>", unsafe_allow_html=True)
+    st.markdown("<h1>Fiscalia</h1>", unsafe_allow_html=True)
+    
+    # Navigation
+    st.subheader("Navigation")
+    st.page_link("app.py", label="💬 Assistant fiscal", icon="📝")
+    st.page_link("pages/architecture.py", label="🏗️ Architecture", icon="🔍")
     
     # Exemples de questions
     st.subheader("Exemples de questions")
@@ -70,7 +90,7 @@ with st.sidebar:
     for i, example in enumerate(EXAMPLE_QUESTIONS):
         # Utiliser directement la description de la question comme texte du bouton
         st.button(example['description'], key=f"btn_{i}", on_click=set_question, args=(example['description'],))
-        # st.markdown("---")
+        st.markdown("---")
     
     # Section À propos
     st.subheader("À propos")
@@ -147,7 +167,7 @@ if question:
                 
                 # Appel à l'API avec un timeout plus long lors des retries
                 timeout = 30 + (retry_count * 20)  # 30s, 50s, 70s...
-                res = requests.post(API_URL, json={"question": question}, timeout=timeout)
+                res = call_private_api(question, API_URL, timeout)
                 res.raise_for_status()
                 data = res.json()
                 

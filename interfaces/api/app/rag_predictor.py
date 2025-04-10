@@ -1,9 +1,7 @@
 from langchain_google_vertexai import VertexAI, VertexAIEmbeddings
 from langchain_community.vectorstores import FAISS
 from langchain_core.prompts import PromptTemplate
-from langchain.chains import RetrievalQA, LLMChain
-from langchain.chains.combine_documents import create_stuff_documents_chain
-from langchain.chains.retrieval import create_retrieval_chain
+from langchain.chains import RetrievalQA
 from langchain_core.output_parsers import StrOutputParser
 from langchain_core.runnables import RunnablePassthrough
 import os
@@ -519,36 +517,32 @@ class FiscalChatbot:
             logger.info(f"Contexte formaté: {len(context)} caractères")
             
             try:
-                # Méthode alternative sans create_stuff_documents_chain
-                answer_chain = LLMChain(
-                    llm=self.llm,
-                    prompt=self.answer_prompt
+                # Nouvelle approche avec RunnableSequence
+                answer_chain = (
+                    {"question": RunnablePassthrough(), "context": lambda x: context}
+                    | self.answer_prompt
+                    | self.llm
+                    | StrOutputParser()
                 )
                 
-                reasoning_chain = LLMChain(
-                    llm=self.llm,
-                    prompt=self.reasoning_prompt
+                reasoning_chain = (
+                    {"question": RunnablePassthrough(), "context": lambda x: context}
+                    | self.reasoning_prompt
+                    | self.llm
+                    | StrOutputParser()
                 )
                 
-                # Exécution des chaînes avec des variables simples
-                logger.info("Génération de la réponse avec LLMChain...")
-                answer_result = answer_chain.invoke({
-                    "question": question,
-                    "context": context
-                })
-                answer = answer_result.get("text", "")
+                # Exécution des chaînes
+                logger.info("Génération de la réponse avec RunnableSequence...")
+                answer = answer_chain.invoke(question)
                 logger.info(f"Réponse générée: {len(answer)} caractères")
                 
-                logger.info("Génération du raisonnement avec LLMChain...")
-                reasoning_result = reasoning_chain.invoke({
-                    "question": question,
-                    "context": context
-                })
-                reasoning = reasoning_result.get("text", "")
+                logger.info("Génération du raisonnement avec RunnableSequence...")
+                reasoning = reasoning_chain.invoke(question)
                 logger.info(f"Raisonnement généré: {len(reasoning)} caractères")
                 
             except Exception as e:
-                logger.error(f"Erreur lors de l'utilisation de LLMChain: {str(e)}")
+                logger.error(f"Erreur lors de l'utilisation de RunnableSequence: {str(e)}")
                 logger.info("Tentative avec appel direct au LLM...")
                 
                 # Si tout échoue, utiliser le LLM directement

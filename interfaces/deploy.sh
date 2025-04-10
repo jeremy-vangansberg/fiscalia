@@ -77,21 +77,6 @@ gcloud projects add-iam-policy-binding "$PROJECT_ID" \
   --quiet
 
 
-echo "🔑 Génération d'une clé pour le compte de service $SA_EMAIL..."
-gcloud iam service-accounts keys create "$CREDENTIALS_FILE" \
-  --iam-account "$SA_EMAIL"
-
-# ---------------------
-# SECRET MANAGER : CREDENTIALS
-# ---------------------
-echo "🔐 Vérification du secret '$SECRET_NAME'..."
-if ! gcloud secrets describe "$SECRET_NAME" &>/dev/null; then
-  echo "🆕 Création du secret à partir du fichier credentials.json..."
-  gcloud secrets create "$SECRET_NAME" --data-file="$CREDENTIALS_FILE"
-else
-  echo "✅ Secret déjà existant, mise à jour de la version..."
-  gcloud secrets versions add "$SECRET_NAME" --data-file="$CREDENTIALS_FILE"
-fi
 
 # ---------------------
 # BUILD + PUSH DES IMAGES
@@ -106,6 +91,12 @@ docker build --platform linux/amd64 -t "$UI_IMAGE" -f web_ui/Dockerfile ./web_ui
 echo "📤 Push de l'image UI..."
 docker push "$UI_IMAGE"
 
+
+gcloud run services add-iam-policy-binding "$SERVICE_NAME_API" \
+  --member="serviceAccount:$SA_EMAIL" \
+  --role="roles/run.invoker" \
+  --region="$REGION"
+
 # ---------------------
 # DEPLOIEMENT CLOUD RUN
 # ---------------------
@@ -114,7 +105,7 @@ gcloud run deploy "$SERVICE_NAME_API" \
   --image "$API_IMAGE" \
   --platform managed \
   --region "$REGION" \
-  --allow-unauthenticated \
+  --no-allow-unauthenticated \
   --service-account "$SA_EMAIL" \
   --set-env-vars PROJECT_ID=$PROJECT_ID,MODEL_NAME_EMBEDDING=text-embedding-004,MODEL_NAME_LLM=gemini-2.0-flash-lite,TEMPERATURE_LLM=0,LOCATION=$LOCATION \
   --memory 2Gi
@@ -137,6 +128,6 @@ gcloud run deploy "$SERVICE_NAME_UI" \
   --platform managed \
   --region "$REGION" \
   --allow-unauthenticated \
-  --set-env-vars API_URL="$API_URL/ask"
+  --set-env-vars API_URL="$API_URL/ask" \
 
 echo "✅ Déploiement terminé avec succès ! 🎉"
