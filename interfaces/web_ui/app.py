@@ -1,28 +1,18 @@
 import streamlit as st
 import os 
 import time
-from google.auth.transport.requests import Request
-from google.oauth2 import id_token
 import requests
+from components.sidebar import render_sidebar
+from utils.utils import call_private_api
 
 # Configuration
 API_URL = os.getenv("API_URL", "http://api:8080/ask")
 MAX_RETRIES = int(os.getenv("MAX_RETRIES", "3"))
 RETRY_DELAY = int(os.getenv("RETRY_DELAY", "10"))
-DEBUG = os.getenv("DEBUG", None)
-USE_AUTH = os.getenv("USE_AUTH", "false").lower() == "true"
 
-def call_private_api(question, API_URL, timeout):
-    headers = {}
 
-    if USE_AUTH:
-        from google.auth.transport.requests import Request
-        from google.oauth2 import id_token
-        token = id_token.fetch_id_token(Request(), API_URL)
-        headers = {"Authorization": f"Bearer {token}"}
-
-    response = requests.post(API_URL, headers=headers, json={"question": question}, timeout=timeout)
-    return response
+if "request_timestamps" not in st.session_state:
+    st.session_state.request_timestamps = []
 
 # Configuration de la page
 st.set_page_config(
@@ -31,6 +21,9 @@ st.set_page_config(
     layout="wide",
     initial_sidebar_state="expanded"
 )
+
+render_sidebar()
+
 
 # CSS minimal pour colorer les sources uniquement
 st.markdown("""
@@ -46,75 +39,6 @@ span[style*="color"] {
 </style>
 """, unsafe_allow_html=True)
 
-# Définition des exemples de questions
-EXAMPLE_QUESTIONS = [
-    {
-        "title": "TVA", 
-        "description": "Comment fonctionne la TVA en France?",
-        "category": "Taxe sur la valeur ajoutée"
-    },
-    {
-        "title": "Impôt sur le revenu", 
-        "description": "Quel est le barème de l'impôt sur le revenu pour 2024?",
-        "category": "Impôts des particuliers"
-    },
-    {
-        "title": "Indemnités kilométriques", 
-        "description": "Comment calculer les indemnités kilométriques pour une voiture de 6CV?",
-        "category": "Frais professionnels"
-    },
-    {
-        "title": "Micro-entreprise", 
-        "description": "Quelles sont les charges sociales pour une micro-entreprise?",
-        "category": "Entrepreneuriat"
-    },
-]
-
-# Fonction pour définir la question à poser
-def set_question(question):
-    st.session_state.question_to_ask = question
-
-# Panneau latéral (Sidebar)
-with st.sidebar:
-    st.markdown("<h1>Fiscalia</h1>", unsafe_allow_html=True)
-    
-    # Navigation
-    st.subheader("Navigation")
-    st.page_link("app.py", label="💬 Assistant fiscal", icon="📝")
-    st.page_link("pages/architecture.py", label="🏗️ Architecture", icon="🔍")
-    
-    # Exemples de questions
-    st.subheader("Exemples de questions")
-    
-    # Afficher les exemples de questions avec des boutons Streamlit
-    for i, example in enumerate(EXAMPLE_QUESTIONS):
-        # Utiliser directement la description de la question comme texte du bouton
-        st.button(example['description'], key=f"btn_{i}", on_click=set_question, args=(example['description'],))
-        st.markdown("---")
-    
-    # Section À propos
-    st.subheader("À propos")
-    st.markdown("""
-    **Fiscalia** est un assistant fiscal intelligent basé sur l'IA qui vous aide à naviguer dans la complexité de la fiscalité française.
-    
-    Notre base de connaissances inclut :
-    - Le Code Général des Impôts
-    - Le Bulletin Officiel des Finances Publiques (BOFiP)
-    - Les barèmes fiscaux actualisés
-    """)
-    
-    # Informations légales
-    st.subheader("Informations légales")
-    with st.expander("Mentions légales"):
-        st.write("""
-        Les réponses fournies par cet assistant sont données à titre informatif uniquement et ne constituent pas un conseil fiscal professionnel. 
-        
-        Consultez un expert-comptable ou un conseiller fiscal pour des conseils adaptés à votre situation personnelle.
-        
-        Fiscalia peut parfois se tromper ou donner des informations incomplètes. Vérifiez toujours les informations importantes auprès des sources officielles.
-        
-        © 2024 Fiscalia. Tous droits réservés.
-        """)
 
 # Contenu principal - Chatbot
 # Initialisation de l'historique des messages s'il n'existe pas
@@ -167,9 +91,12 @@ if question:
                 
                 # Appel à l'API avec un timeout plus long lors des retries
                 timeout = 30 + (retry_count * 20)  # 30s, 50s, 70s...
+
+                ###### Appel à l'API avec un timeout plus long lors des retries#####
                 res = call_private_api(question, API_URL, timeout)
                 res.raise_for_status()
                 data = res.json()
+                ############################
                 
                 # Si on arrive ici, c'est que l'appel a réussi
                 success = True
@@ -249,6 +176,9 @@ if question:
                     wait_message = f"Un instant, je consulte mes ressources... ({RETRY_DELAY}s)"
                     status_container.info(wait_message)
                     time.sleep(RETRY_DELAY)
+
+            except RuntimeError as rate_error:
+                st.warning(str(rate_error))
                     
             except Exception as e:
                 # Autres erreurs

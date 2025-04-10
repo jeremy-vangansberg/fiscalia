@@ -1,5 +1,7 @@
 import streamlit as st
 
+from components.sidebar import render_sidebar
+
 # Configuration de la page
 st.set_page_config(
     page_title="Architecture | Fiscalia",
@@ -7,11 +9,13 @@ st.set_page_config(
     layout="wide"
 )
 
+render_sidebar(include_examples=False)
+
 # Titre de la page
 st.title("🏗️ Architecture de Fiscalia")
 
 # Affichage du diagramme d'architecture
-st.image("pages/architecture_application.png", caption="Architecture d'application", width=800)
+st.image("media/architecture_application.png", caption="Architecture d'application", width=800)
 
 # Explication détaillée des composants
 st.markdown("""

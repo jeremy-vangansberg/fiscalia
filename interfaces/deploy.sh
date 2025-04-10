@@ -128,6 +128,11 @@ gcloud run deploy "$SERVICE_NAME_UI" \
   --platform managed \
   --region "$REGION" \
   --allow-unauthenticated \
-  --set-env-vars API_URL="$API_URL/ask" \
+  --set-env-vars API_URL="$API_URL/ask",USE_AUTH=true
+
+# gcloud beta run domain-mappings create \
+#   --service="$SERVICE_NAME_UI" \
+#   --domain="fiscalia.cloud"\
+#   --region="$REGION"
 
 echo "✅ Déploiement terminé avec succès ! 🎉"
